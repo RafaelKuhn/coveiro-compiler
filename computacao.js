@@ -1,0 +1,1 @@
+alert("pagina da computação, aqui é só pros computeiro 😎")
