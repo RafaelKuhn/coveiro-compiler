@@ -12,7 +12,7 @@ function mandaProgramaPraComputacao() {
 	// const lineCount = (textWithLBs.match() || []).length + 1
 	// alert(`text has ${lineCount} lines of code`)
 
-	const uri = encodeURI(`computacao?p="${textWithEncodedLBs}"`)
+	const uri = encodeURI(`computacao?p='${textWithEncodedLBs}'`)
 
 	window.location.href = uri
 }

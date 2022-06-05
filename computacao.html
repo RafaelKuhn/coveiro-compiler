@@ -5,10 +5,29 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Computação</title>
+	<style>
+		input {
+			max-width: 4em;
+		}
+	</style>
 </head>
 <body>
 
+	<h2>Input:</h2>
+	<div id="inputers"></div>
+	<br><br>
+
+	<!-- TODO: se pa nem mostra essa merda -->
+	<h2>Código:</h2>
 	<pre id="codezao"></pre>
+	<br><br>
+	
+	<button onclick="computaEMostra()">COMPUTA</button>
+
+	<div id="runtime-container"></div>
+	<br><br>
+	
+	
 
 	<a href="programa.html">VOLTA</a>
 	<script src="computacao.js"></script>

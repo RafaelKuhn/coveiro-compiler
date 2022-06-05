@@ -1,0 +1,68 @@
+1: # a=2, b=3, c=0, d=0
+2: se a_zero va_para 5 senao va_para 0
+3:
+4:  # põe o valor de B em C e D
+5:  se b_zero va_para 11 senao va_para 6
+6:  faca c_add va_para 7
+7:  faca d_add va_para 8
+8:  faca b_sub va_para 5
+9: 
+10:  # põe o valor de C em B, volta quando C for 0
+11: se c_zero va_para 16 senao va_para 12
+12: faca b_add va_para 13
+13: faca c_sub va_para 11
+14: 
+15: # retorna, diminuindo A
+16: faca a_sub va_para 2
+
+
+# a=2, b=3, c=0, d=0   a != 0 foi pra 5
+
+# a=2, b=3, c=0, d=0   b != 0 foi pra 6
+# a=2, b=3, c=1, d=0   c_add foi pra 7
+# a=2, b=3, c=1, d=1   d_add foi pra 8
+# a=2, b=2, c=1, d=1   b_sub foi pra 5
+
+# a=2, b=2, c=1, d=1   b != 0 foi pra 6
+# a=2, b=2, c=2, d=1   c_add foi pra 7
+# a=2, b=2, c=2, d=2   d_add foi pra 8
+# a=2, b=1, c=2, d=2   b_sub foi pra 5
+
+# a=2, b=1, c=2, d=2   b != 0 foi pra 6
+# a=2, b=1, c=3, d=2   c_add foi pra 7
+# a=2, b=1, c=3, d=3   d_add foi pra 8
+# a=2, b=0, c=3, d=3   b_sub foi pra 5
+
+# a=2, b=0, c=3, d=3   b == 0 foi pra 11
+# a=2, b=0, c=3, d=3   c != 0 foi pra 12
+b_add -> c_sub
+# a=2, b=1, c=2, d=3   c != 0 foi pra 12
+# a=2, b=2, c=1, d=3   c != 0 foi pra 12
+# a=2, b=3, c=0, d=3   c == 0 foi pra 16
+# a=1, b=3, c=0, d=3   a_sub foi pra 2
+
+
+# a=1, b=3, c=0, d=3   b != 0 foi pra 6
+# a=1, b=3, c=1, d=3   c_add foi pra 7
+# a=1, b=3, c=1, d=4   d_add foi pra 8
+# a=1, b=2, c=1, d=4   b_sub foi pra 5
+
+# a=1, b=2, c=1, d=4   b != 0 foi pra 6
+# a=1, b=2, c=2, d=4   c_add foi pra 7
+# a=1, b=2, c=2, d=5   d_add foi pra 8
+# a=1, b=1, c=2, d=5   b_sub foi pra 5
+
+# a=1, b=1, c=2, d=5   b != 0 foi pra 6
+# a=1, b=1, c=3, d=5   c_add foi pra 7
+# a=1, b=1, c=3, d=6   d_add foi pra 8
+# a=1, b=0, c=3, d=6   b_sub foi pra 5
+
+# a=1, b=0, c=3, d=6   b == 0 foi pra 11
+# a=1, b=0, c=3, d=6   c != 0 foi pra 12
+b_add -> c_sub
+# a=1, b=1, c=2, d=6   c != 0 foi pra 12
+# a=1, b=2, c=1, d=6   c != 0 foi pra 12
+# a=1, b=3, c=0, d=6   c == 0 foi pra 16
+# a=0, b=3, c=0, d=6   a_sub foi pra 2
+
+# a=0, b=3, c=0, d=6   a_sub foi pra 2
