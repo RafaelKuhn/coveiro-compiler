@@ -1,16 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Máquina</title>
-</head>
-<body>
-	
+<html lang="en">
 
-	<a href="computacao.html">PROGRAMEI, AGORA FAZ A COMPUTEICHON</a> <br><br><br><br><br>
-	<a href="index.html">VOLTA</a>
-	<script src="programa.js"></script>
+<head>
+	<title>Programa</title>
+	<style type="text/css" media="screen">
+		#editor {
+			position: absolute;
+			top: 0;
+			right: 50%;
+			bottom: 0;
+			left: 0;
+		}
+
+		#direita-editor {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 50%;
+		}
+
+		a {
+			color: blue;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="editor">se b_zero va_para 1 senao va_para 2
+se b_zero va_para 2 senao va_para 1
+</div>
+
+	<div id="direita-editor">
+		<a onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</a>
+		<br><br><br><br><br>
+		<a href="index.html">VOLTA</a>
+	</div>
+
+
+	<!-- FAZ FUNCIONAR O EDITOR FODAO -->
+	<script src="/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.session.setMode("ace/mode/javascript");
+	</script>
+
+	<!-- NOSSO SHCRIPT -->
+	<script src="programa.js" type="text/javascript" defer></script>
 </body>
+
 </html>
