@@ -27,7 +27,7 @@ ace.define('ace/mode/portugol_highlight_rules', ['require', 'exports', 'ace/lib/
       start: [
         {
           token: "entity.name.function",
-          regex: "(.)(_sub) | (.)(_add) | (.)(_zero)"
+          regex: "(a|b|c|d)(_sub|_add|_zero)"
         },
         {
           token: "keyword.operator",
