@@ -24,15 +24,12 @@ const programaCru = params.get("p").replace(/'/g, "")
 const programaObjeto = JSON.parse(programaCru);
 
 const qtdLinhas = programaObjeto.lines;
-const expressoes = programaObjeto.expressions;
+const expressions = programaObjeto.expressions;
 
 const arrayDeInputsNoHTML = criaEntradasDoUser();
 
 const preEsq = document.getElementById("preEsquerda");
 const preDir = document.getElementById("preDireita");
-
-
-let maxIteracoes = 1000;
 
 // isso é chamado pelo botão
 function computaEMostra() {
@@ -48,17 +45,18 @@ function computaEMostra() {
 /**
  * @param {Map<String, Int>} mapaDeRegistradores 
  */
-// TODO: passa linha atual que o bagulho começa
 function simulaComputacao(mapaDeRegistradores) {
-	let linhaAtual = 2;
+	let linhaAtual = achaLinhaQueOAlgoritmoComeca();
+
+	let maxIteracoes = 1000;
 	let qtdIteracoes = 0;
 
 	mostraLinhaDeSaidaNoDisplay(
 		"instrução inicial e valores de entrada armazenados",
 		stringEstadoRegistradores(linhaAtual, mapaDeRegistradores));
 
-	while (linhaAtual != 0) {
-		const expressao = expressoes[linhaAtual - 1];
+	while (linhaAtual !== 0) {
+		const expressao = expressions[linhaAtual - 1];
 		if (!expressao) continue; // se a linha for um comentário, expressão é null
 
 		if (expressao.type === "if") {
@@ -90,16 +88,34 @@ function simulaComputacao(mapaDeRegistradores) {
 		}
 
 		if (qtdIteracoes >= maxIteracoes) {
-			mostraLinhaDeSaidaNoDisplay(
-				`ATINGIU ${maxIteracoes} ITERAÇÕES, POSSÍVEL LOOP INFINITO!`,
-				stringEstadoRegistradores(0, mapaDeRegistradores));
-			return;
+			const userWishesToStop = confirm(`O programa atingiu ${maxIteracoes} iterações, possível loop infinito, deseja parar?\n(se continuar, o máximo de iterações será dobrado)`)
+			if (userWishesToStop) {
+				mostraQualquerCoisa(`MÁXIMO DE ITERAÇÕES ALCANÇADO: ${maxIteracoes}`,
+					" POSSÍVEL LOOP INFINITO");
+				return;
+			}
+
+			maxIteracoes *= 2;
 		}
 
 		qtdIteracoes++;
 	}
 
-	mostraParada();
+	mostraQualquerCoisa("em 0, programa parou! ->\n", "✓");
+}
+
+/**
+ * @returns {Number}
+ */
+function achaLinhaQueOAlgoritmoComeca() {
+	for (let i = 0; i < expressions.length; i++) {
+		if (expressions[i]) {
+			return i+1;
+		}
+	}
+
+	console.error("ERRO! ALGORITMO VAZIO!");
+	return 0;
 }
 
 function formataIgualZero(cond) {
@@ -120,8 +136,9 @@ function checaCondicao(condicao, registradores) {
 		const keyRegistrador = condicao.charAt(0);
 		return registradores[keyRegistrador] == 0;
 	}
+	
 	else {
-		console.warn("!!!!!!!!!!!!!! CONDICAO NAO INCLUI ZERO !!!!!!!!!!!!!")
+		console.warn("!!!!!!!!!!!!!! CONDICAO NAO IMPLEMENTADA !!!!!!!!!!!!!")
 		return false;
 	}
 
@@ -203,18 +220,14 @@ function stringEstadoRegistradores(numeroDaLinha, mapaDeRegistradores) {
 	return output;
 }
 
-/**
- * @param {String} outputDir 
- * @param {String} outputEsq 
- */
 function mostraLinhaDeSaidaNoDisplay(outputEsq, outputDir) {
 	preEsq.textContent += `${outputEsq} ->\n`;
 	preDir.textContent += ` ${outputDir}\n`;
 }
 
-function mostraParada() {
-	preEsq.textContent += `em 0, programa parou! ->\n`;
-	preDir.textContent += ` ✓`;
+function mostraQualquerCoisa(textoEsquerda, textoDireita) {
+	preEsq.textContent += textoEsquerda;
+	preDir.textContent += textoDireita;
 }
 
 

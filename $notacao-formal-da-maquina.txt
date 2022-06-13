@@ -1,0 +1,23 @@
+asd = N^7, N^3, N^4
+
+armazena_a: N^7 tal que, ∀neN, armazena_a(n) = (a,0,0,0,0,0,0);
+armazena_c: N^7 tal que, ∀neN, armazena_c(n) = (0,0,c,0,0,0,0);
+armazena_d: N^7 tal que, ∀neN, armazena_d(n) = (0,0,0,d,0,0,0);
+
+retorna_b: N^7 -> N tal que, ∀(m,n,o,p,q,r,s)∈N^7, retorna_b(m,b,o,p,q,r,s) = n;
+retorna_e: N^7 -> N tal que, ∀(m,n,o,p,q,r,s)∈N^7, retorna_e(m,n,o,p,e,r,s) = n;
+retorna_f: N^7 -> N tal que, ∀(m,n,o,p,q,r,s)∈N^7, retorna_f(m,n,o,p,q,f,s) = n;
+retorna_g: N^7 -> N tal que, ∀(m,n,o,p,q,r,s)∈N^7, retorna_g(m,n,o,p,q,r,g) = n;
+
+adiciona_b: N^7 -> N^7 tal que, ∀(m,n,o,p,q,r,s)∈N^7, adiciona_b(m,n,o,p,q,r,s) = (m,b+1,o,p,q,r,s);
+adiciona_f: N^7 -> N^7 tal que, ∀(m,n,o,p,q,r,s)∈N^7, adiciona_f(m,n,o,p,q,r,s) = (m,n,o,p,q,f+1,s);
+
+subtrai_a: N^7 -> N^7 tal que, ∀(m,n,o,p,q,r,s)∈N^7, subtrai_a(m,n,o,p,q,r,s) = (a-1,n,o,p,q,r,s), se n>=0; subtrai_a(m,n,o,p,q,r,s) = (0,n,o,p,q,r,s), se n = 0
+subtrai_b: N^7 -> N^7 tal que, ∀(m,n,o,p,q,r,s)∈N^7, subtrai_b(m,n,o,p,q,r,s) = (m,b-1,o,p,q,r,s), se n>=0; subtrai_b(m,n,o,p,q,r,s) = (m,0,o,p,q,r,s), se n = 0
+subtrai_g: N^7 -> N^7 tal que, ∀(m,n,o,p,q,r,s)∈N^7, subtrai_g(m,n,o,p,q,r,s) = (m,n,o,p,q,r,g-1), se n>=0; subtrai_g(m,n,o,p,q,r,s) = (m,n,o,p,q,r,0), se n = 0
+
+
+TODO: PERGUNTAR PRO CAVALHEIRO O QUE FAZER NESSE CASO (e nos outros)
+a_zero -> {verdadeiro, falso} tal que, ∀(m,n,o,p,q,r,s),∈N^7, a_zero(m,n,o,p,q,r,s) = verdadeiro, se n = 0; a_zero(m,n,o,p,q,r,s) = falso, se n ≠ 0
+c_zero -> {verdadeiro, falso} tal que, ∀(m,n,o,p,q,r,s),∈N^7, c_zero(m,n,o,p,q,r,s) = verdadeiro, se n = 0; c_zero(m,n,o,p,q,r,s) = falso, se n ≠ 0
+d_zero -> {verdadeiro, falso} tal que, ∀(m,n,o,p,q,r,s),∈N^7, d_zero(m,n,o,p,q,r,s) = verdadeiro, se n = 0; d_zero(m,n,o,p,q,r,s) = falso, se n ≠ 0
