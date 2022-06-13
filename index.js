@@ -2,16 +2,36 @@ console.log("temo na página do maquinario");
 
 let checkBoxes = [];
 let qtdRegistradores;
+const properties = [
+	'stores',
+	'returns',
+	'ifZero',
+	'greater',
+	'lesser',
+	'adds',
+	'subs',
+	'mults',
+	'divis'
+];
 function criaTabela() {
 	qtdRegistradores = parseInt(document.getElementById('qtdRegistradores').value);
+	let table = document.getElementById('idTabela');
+	let botaoValidar = document.getElementById('idBotaoValidar');
+
+	if (table != null & botaoValidar != null) {
+		table.remove();
+		botaoValidar.remove();
+	}
+
 	let tblDiv = document.getElementById('tabela');
-	let table = document.createElement('table');
+	table = document.createElement('table');
+	table.id = 'idTabela';
 	table.border = '1px';
-	table.style.width = '50%'
+	table.style.width = '100%'
 
 	let tableHead = document.createElement('thead');
 	table.appendChild(tableHead);
-	let tableIndex = ['Registrador', 'Armazena', 'Retorna', 'Checa Zero', 'Soma', 'Subtração', 'Multiplica', 'Divide'];
+	let tableIndex = ['Registrador', 'Armazena', 'Retorna', 'If Zero', 'Maior que', 'Menor que', 'Soma', 'Subtração', 'Multiplicação', 'Divisão'];
 	let linhaHead = document.createElement('tr');
 	for (let col = 0; col < tableIndex.length; col++) {
 		let th = document.createElement('th');
@@ -28,42 +48,69 @@ function criaTabela() {
 		td = document.createElement('td');
 		td.textContent = String.fromCharCode(97 + linha);
 		linhaBody.appendChild(td);
+		checkBoxes[linha] = [];
 
 		for (let coluna = 1; coluna < tableIndex.length; coluna++) {
-		
+
 			td = document.createElement('td');
 			let checkBox = document.createElement('input');
 			checkBox.type = 'checkbox';
-			
+			checkBox.style.width = '100%';
+			checkBox.style.height = '20px';
 
 			td.appendChild(checkBox);
 			linhaBody.appendChild(td);
 
-			checkBoxes.push(checkBox);
-			console.log(checkBox);
+			checkBoxes[linha].push(checkBox);
 		}
 		tableBody.appendChild(linhaBody);
 	}
 
 	tblDiv.appendChild(table);
-	let botaoEnviar = document.createElement('button');
-	botaoEnviar.type = 'button';
-	botaoEnviar.textContent = 'Enviar';
-	botaoEnviar.onclick = enviaMaquina;
-	document.getElementById('botaoEnviar').appendChild(botaoEnviar);
+	botaoValidar = document.createElement('button');
+	botaoValidar.id = 'idBotaoValidar'
+	botaoValidar.type = 'button';
+	botaoValidar.textContent = 'Validar';
+	botaoValidar.onclick = validarMaquina;
+	document.getElementById('botaoValidar').appendChild(botaoValidar);
 }
 
 
-function enviaMaquina(){
-	const maquina = {};
-	maquina.registers = qtdRegistradores;
-	for (let i = 0; i < checkBoxes.length; i++){
-		let valores = checkBoxes[i].checked;
-		console.log(valores);
+function validarMaquina() {
+	const machine = {};
+	machine.registers = qtdRegistradores;
+
+	for (let i = 0	; i < properties.length; i++) {
+		machine[properties[i]] = [];
+		console.log(properties[i]);
+	}
+
+	for (let y = 0; y < checkBoxes.length; y++) {
+		const checkBoxesY = checkBoxes[y]
+		for (let x = 0; x < checkBoxesY.length; x++) {
+			const current = checkBoxesY[x];
+			if (current.checked) {
+				machine[properties[x]].push(String.fromCharCode(97 + y));
+			}
+		}
+	}
+
+	let machineJson = JSON.stringify(machine);
+	let uri = encodeURI(`programa?m='${machineJson}'`);
+	criaBotaoEnviar(uri);
+}
+
+function criaBotaoEnviar(uri) {
+	let botaoEnviar = document.getElementById('idBotaoEnviar')
+
+	if (botaoEnviar != null) {
+		botaoEnviar.remove();
 	}
 	
-	
-
-	console.log(JSON.stringify(maquina));
-	// window.location.href = 'programa.html'
+	botaoEnviar = document.createElement('button');
+	botaoEnviar.id = 'idBotaoEnviar'
+	botaoEnviar.type = 'button';
+	botaoEnviar.textContent = 'Enviar';
+	botaoEnviar.onclick = 	() => {window.location.href = uri;};
+	document.getElementById('botaoEnviar').appendChild(botaoEnviar);	
 }
