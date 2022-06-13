@@ -15,6 +15,6 @@ function mandaProgramaPraComputacao() {
 	const mockProgram = {"lines": 16,"expressions": [	null,	{ "type": "if","condition": "a_zero","onTrue": 0,"onFalse": 5},null, null,{ "type": "if","condition": "b_zero","onTrue": 11,"onFalse": 6},{ "type": "call","what": "c_add","then": 7},{ "type": "call","what": "d_add","then": 8},{ "type": "call","what": "b_sub","then": 5},null, null,{ "type": "if","condition": "c_zero","onTrue": 16,"onFalse": 12},{"type": "call","what": "b_add","then": 13},{"type": "call","what": "c_sub","then": 11},null, null,{"type": "call","what": "a_sub","then": 2},]}
 	const mockProgramJson = JSON.stringify(mockProgram);
 
-	const uri = encodeURI(`computacao?p='${mockProgramJson}'`)
+	const uri = encodeURI(`computacao.html?p='${mockProgramJson}'`)
 	window.location.href = uri
 }
