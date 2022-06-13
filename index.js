@@ -1,41 +1,69 @@
 console.log("temo na página do maquinario");
 
-function contabiliza() {
-	alert(`vamo gera o maquinário com ${document.getElementById("quantidadeRegs").value}`)
-
-	var qtdRegistradores = document.getElementById("qtdRegistradores");
-}
-
+let checkBoxes = [];
+let qtdRegistradores;
 function criaTabela() {
-	var tblDiv = document.getElementById("tabela");
-	var table = document.createElement('table');
+	qtdRegistradores = parseInt(document.getElementById('qtdRegistradores').value);
+	let tblDiv = document.getElementById('tabela');
+	let table = document.createElement('table');
 	table.border = '1px';
 	table.style.width = '50%'
 
-	var tableHead = document.createElement('thead');
+	let tableHead = document.createElement('thead');
 	table.appendChild(tableHead);
-	var tableIndex = ['Registrador', 'Armazena', 'Retorna', 'Checa Zero', 'Soma', 'Subtração', 'Multiplica'];
-	var linhaHead = document.createElement('tr');
+	let tableIndex = ['Registrador', 'Armazena', 'Retorna', 'Checa Zero', 'Soma', 'Subtração', 'Multiplica', 'Divide'];
+	let linhaHead = document.createElement('tr');
 	for (let col = 0; col < tableIndex.length; col++) {
-		var th = document.createElement('th');
+		let th = document.createElement('th');
 		th.textContent = tableIndex[col];
 		linhaHead.appendChild(th);
 	}
 	tableHead.appendChild(linhaHead);
-	
-	var tableBody = document.createElement('tbody');
-	table.appendChild(tableBody);
-	for (var linha = 0; linha < tableIndex.length; linha++) {
-		linhaBody = document.createElement('tr');
 
-		for (let coluna = 0; coluna < tableIndex.length[linha]; coluna++) {
+	let tableBody = document.createElement('tbody');
+	table.appendChild(tableBody);
+	for (let linha = 0; linha < qtdRegistradores; linha++) {
+
+		let linhaBody = document.createElement('tr');
+		td = document.createElement('td');
+		td.textContent = String.fromCharCode(97 + linha);
+		linhaBody.appendChild(td);
+
+		for (let coluna = 1; coluna < tableIndex.length; coluna++) {
+		
 			td = document.createElement('td');
-			td.textContent = '';
+			let checkBox = document.createElement('input');
+			checkBox.type = 'checkbox';
+			
+
+			td.appendChild(checkBox);
 			linhaBody.appendChild(td);
+
+			checkBoxes.push(checkBox);
+			console.log(checkBox);
 		}
 		tableBody.appendChild(linhaBody);
 	}
 
 	tblDiv.appendChild(table);
+	let botaoEnviar = document.createElement('button');
+	botaoEnviar.type = 'button';
+	botaoEnviar.textContent = 'Enviar';
+	botaoEnviar.onclick = enviaMaquina;
+	document.getElementById('botaoEnviar').appendChild(botaoEnviar);
 }
-criaTabela();
+
+
+function enviaMaquina(){
+	const maquina = {};
+	maquina.registers = qtdRegistradores;
+	for (let i = 0; i < checkBoxes.length; i++){
+		let valores = checkBoxes[i].checked;
+		console.log(valores);
+	}
+	
+	
+
+	console.log(JSON.stringify(maquina));
+	// window.location.href = 'programa.html'
+}

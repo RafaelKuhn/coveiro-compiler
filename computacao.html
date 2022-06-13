@@ -9,27 +9,43 @@
 		input {
 			max-width: 4em;
 		}
+		pre {
+			margin-top: 0;
+			width: 65ch;
+		}
+
+		#preEsquerda {
+			text-align: end;
+		}
+
+		.flex {
+			display: flex;
+		}
+		.hidden * {
+			display: none;
+		}
+
 	</style>
+
 </head>
 <body>
+	<button onclick="window.location.href = 'programa.html'">VOLTAR</button>
+	<br><br>
 
 	<h2>Input:</h2>
-	<div id="inputers"></div>
+	<div id="inputers"></div>	
 	<br><br>
 
-	<!-- TODO: se pa nem mostra essa merda -->
-	<h2>Código:</h2>
-	<pre id="codezao"></pre>
-	<br><br>
-	
 	<button onclick="computaEMostra()">COMPUTA</button>
-
-	<div id="runtime-container"></div>
-	<br><br>
 	
-	
+	<div id="runtime-container" class="hidden">
+		<h2>Resultado:</h2>
+		<div class="flex">
+			<pre id="preEsquerda"></pre>
+			<pre id="preDireita"></pre>
+		</div>
+	</div>
 
-	<a href="programa.html">VOLTA</a>
 	<script src="computacao.js"></script>
 </body>
 </html>

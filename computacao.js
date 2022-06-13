@@ -1,17 +1,7 @@
-console.log("temo na pagina do compiuter")
-
 const params = new URLSearchParams(decodeURI(window.location.search))
 
 // const rawMachine = params.get("m").replace(/'/g, "")
-// const rawProgram = params.get("p").replace(/'/g, "")
-
-//  TODO: get json code from url
-// const dataWithLiteralLBs = rawProgram.replace(/<EOL>/g, "\n")
-
-// document.getElementById("codezao").textContent = `código:\n\n${dataWithLiteralLBs}`
-
-// MÁQUINA
-const machine = {
+const templateMaquina = {
 	"registers": 4,
 	"stores": [
 		"a", "b"
@@ -30,104 +20,209 @@ const machine = {
 	],
 }
 
+const programaCru = params.get("p").replace(/'/g, "")
+const programaObjeto = JSON.parse(programaCru);
 
-// MONOLÍTICO
-const program = {
-	"lines": 16,
-	"expressions": [
-		null,
-		{ // 2
-			"type": "if",
-			"condition": "a_zero",
-			"onTrue": 5,
-			"onFalse": 0
-		},
-		null, null,
-		{ // 5
-			"type": "if",
-			"condition": "b_zero",
-			"onTrue": 11,
-			"onFalse": 6
-		},
-		{ // 6
-			"type": "call",
-			"what": "c_add",
-			"then": 7
-		},
-		{ // 7
-			"type": "call",
-			"what": "d_add",
-			"then": 8
-		},
-		{ // 8
-			"type": "call",
-			"what": "b_sub",
-			"then": 5
-		},
-		null, null,
-		{ // 11
-			"type": "if",
-			"condition": "c_zero",
-			"onTrue": 16,
-			"onFalse": 12
-		},
-		{ // 12
-			"type": "call",
-			"what": "b_add",
-			"then": 13
-		},
-		{ // 13
-			"type": "call",
-			"what": "c_sub",
-			"then": 11
-		},
-		null, null,
-		{ // 16
-			"type": "call",
-			"what": "a_sub",
-			"then": 2
-		},
-	]
-}
+const qtdLinhas = programaObjeto.lines;
+const expressoes = programaObjeto.expressions;
+
+const arrayDeInputsNoHTML = criaEntradasDoUser();
+
+const preEsq = document.getElementById("preEsquerda");
+const preDir = document.getElementById("preDireita");
 
 
-document.getElementById("codezao").textContent = `código:\n\n${JSON.stringify(program)}`
-
-const entrada = criaEntradasDoUser()
-
-
+let maxIteracoes = 1000;
 
 // isso é chamado pelo botão
 function computaEMostra() {
-	const pre = criaOuAchaPre();
+	preEsq.textContent = "";
+	preDir.textContent = "";
+	document.getElementById("runtime-container").classList.remove("hidden");
 	
-	const valoresDeEntrada = [];
-	for (let ch_registrador in entrada) {
-		valoresDeEntrada[ch_registrador] = parseInt(entrada[ch_registrador].value);
-	}
-	
-	pre.textContent = simulaComputacao(valoresDeEntrada);
+	const valoresDeEntrada = pegaEntradaDoHTML();
+
+	simulaComputacao(valoresDeEntrada);
 }
 
-function simulaComputacao(entrada) {
-	let a = "usando input:\n"
+/**
+ * @param {Map<String, Int>} mapaDeRegistradores 
+ */
+// TODO: passa linha atual que o bagulho começa
+function simulaComputacao(mapaDeRegistradores) {
+	let linhaAtual = 2;
+	let qtdIteracoes = 0;
 
-	for (let ch_registrador in entrada) {
-		a += `${ch_registrador}: ${entrada[ch_registrador]}\n`;
+	mostraLinhaDeSaidaNoDisplay(
+		"instrução inicial e valores de entrada armazenados",
+		stringEstadoRegistradores(linhaAtual, mapaDeRegistradores));
+
+	while (linhaAtual != 0) {
+		const expressao = expressoes[linhaAtual - 1];
+		if (!expressao) continue; // se a linha for um comentário, expressão é null
+
+		if (expressao.type === "if") {
+			const ifDeuTrue = checaCondicao(expressao.condition, mapaDeRegistradores);
+			if (ifDeuTrue) {
+				mostraLinhaDeSaidaNoDisplay(
+					`em ${linhaAtual}, como ${formataIgualZero(expressao.condition)}, desviou para ${expressao.onTrue}`,
+					stringEstadoRegistradores(expressao.onTrue, mapaDeRegistradores));
+
+				linhaAtual = expressao.onTrue;
+
+			}
+			else {
+				mostraLinhaDeSaidaNoDisplay(
+					`em ${linhaAtual}, como ${formataDiferenteZero(expressao.condition)}, desviou para ${expressao.onFalse}`,
+					stringEstadoRegistradores(expressao.onFalse, mapaDeRegistradores));
+				
+				linhaAtual = expressao.onFalse;
+			}
+		}
+
+		else if (expressao.type === "call") {
+			const logOperacao = executaOperacaoERetornaLog(expressao.what, mapaDeRegistradores);
+			mostraLinhaDeSaidaNoDisplay(
+				`em ${linhaAtual}, ${logOperacao}, desviou para ${expressao.then}`,
+				stringEstadoRegistradores(expressao.then, mapaDeRegistradores));
+			
+			linhaAtual = expressao.then;
+		}
+
+		if (qtdIteracoes >= maxIteracoes) {
+			mostraLinhaDeSaidaNoDisplay(
+				`ATINGIU ${maxIteracoes} ITERAÇÕES, POSSÍVEL LOOP INFINITO!`,
+				stringEstadoRegistradores(0, mapaDeRegistradores));
+			return;
+		}
+
+		qtdIteracoes++;
 	}
 
-	a += "\nTODO: computar!"
+	mostraParada();
+}
 
-	return a;
+function formataIgualZero(cond) {
+	return `${cond.charAt(0)} == 0`;
+}
+
+function formataDiferenteZero(cond) {
+	return `${cond.charAt(0)} != 0`;
+}
+
+/**
+ * @param {Map<String, Int>} registradores 
+ * @param {String} condicao 
+ * @returns {Boolean}
+ */
+function checaCondicao(condicao, registradores) {
+	if (condicao.includes("zero")) {
+		const keyRegistrador = condicao.charAt(0);
+		return registradores[keyRegistrador] == 0;
+	}
+	else {
+		console.warn("!!!!!!!!!!!!!! CONDICAO NAO INCLUI ZERO !!!!!!!!!!!!!")
+		return false;
+	}
+
+	// TODO: outras condiçoes, talvez retornar algo daqui (objeto) de log
+}
+
+/**
+ * @param {String} operacao 
+ * @return {String}
+ */
+function executaOperacaoERetornaLog(operacao, registradores) {
+	const keyRegistrador = operacao.charAt(0);
+
+	if (operacao.includes("add")) {
+		registradores[keyRegistrador]++;
+		return `adicionou no registrador ${keyRegistrador}`;
+	}
+
+	else if (operacao.includes("sub")) {
+		registradores[keyRegistrador]--;
+		return `subtraiu registrador ${keyRegistrador}`;
+	}
+
+	else {
+		console.warn(" ERRROOOOO OPERAÇAO INVALIDA!! !! !  " + operacao);
+		return `DEU ERRO!!! OPERACAO NAO IMPLEMENTADA!!! ${operacao}`;
+	}
+
+	// TODO: outras operaçoes
+}
+
+// #############################################################################################################################
+// ###################################### abaixo somente boilerplate de HTML e javascript ######################################
+// #############################################################################################################################
+
+/**
+ * @returns {Map<String,Int>}
+ */
+ function pegaEntradaDoHTML() {
+	const map = [];
+
+	let caractere = 'a'
+	for(let i = 0; i < templateMaquina.registers; i++) {
+		map[caractere] = 0;
+		caractere = incrementaCaractere(caractere);
+	}
+
+	for (let ch_registrador in arrayDeInputsNoHTML) {
+		map[ch_registrador] = parseInt(arrayDeInputsNoHTML[ch_registrador].value);
+	}
+
+	return map;
+}
+
+/**
+ * 
+ * @param {String} caractere 
+ * @returns {String}
+ */
+function incrementaCaractere(caractere) {
+	return String.fromCharCode(caractere.charCodeAt(0) + 1);
+}
+
+/**
+ * @param {Int} numeroDaLinha 
+ * @param {Map<String, Int>} mapaDeRegistradores 
+ * @returns {String}
+ */
+function stringEstadoRegistradores(numeroDaLinha, mapaDeRegistradores) {
+	let output = `(${numeroDaLinha}, (`;
+	
+	for (let ch_registrador in mapaDeRegistradores) {
+		// console.log(`reg ${ch_registrador}: ${mapaDeRegistradores[ch_registrador]} `);
+		output += `${ch_registrador}: ${mapaDeRegistradores[ch_registrador]}, `;
+	}
+	output = output.slice(0, -2); // remove os dois últimos caracteres -> ", "
+	output += "))";
+
+	return output;
+}
+
+/**
+ * @param {String} outputDir 
+ * @param {String} outputEsq 
+ */
+function mostraLinhaDeSaidaNoDisplay(outputEsq, outputDir) {
+	preEsq.textContent += `${outputEsq} ->\n`;
+	preDir.textContent += ` ${outputDir}\n`;
+}
+
+function mostraParada() {
+	preEsq.textContent += `em 0, programa parou! ->\n`;
+	preDir.textContent += ` ✓`;
 }
 
 
-
-// abaixo somente boilerplate de HTML
+/** @returns {Array<inputEl>} */
 function criaEntradasDoUser() {
 	const entradas = []
 	const inputersDiv = document.getElementById("inputers");
-	const registradoreDeEntrada = machine.stores;
+	const registradoreDeEntrada = templateMaquina.stores;
 	
 	registradoreDeEntrada.forEach(caractereDoRegistrador => {
 		const previewEl = document.createElement("span");
@@ -136,7 +231,7 @@ function criaEntradasDoUser() {
 		const inputEl = document.createElement("input");
 		inputEl.max = 255;
 		inputEl.min = 0;
-		inputEl.value = 0;
+		inputEl.value = Math.floor(Math.random() * (7 + 1));
 		
 		entradas[caractereDoRegistrador] = inputEl;
 		
@@ -145,26 +240,4 @@ function criaEntradasDoUser() {
 	})
 
 	return entradas;
-}
-
-/** @returns {HTMLPreElement} */
-function criaOuAchaPre() {
-	const preCriado = document.getElementById("runtime");
-	if (preCriado) {
-		return preCriado;
-	}
-
-	const runtimeContainer = document.getElementById("runtime-container");
-	
-	const newTitleEl = document.createElement("h2");
-	newTitleEl.textContent = "Execução:"
-	
-	const newPreEl = document.createElement("pre");
-	newPreEl.id = "runtime";
-	newPreEl.textContent = "<>"
-	
-	runtimeContainer.appendChild(newTitleEl);
-	runtimeContainer.appendChild(newPreEl);
-	
-	return newPreEl;
 }
