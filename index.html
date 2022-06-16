@@ -5,19 +5,34 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Máquina</title>
+	<style>
+		pre {
+			/* border: 1px double; */
+			border-style: double;
+		}
+	</style>
 </head>
 <body>
 
-	<h2>Selecione a quantidade de registradores:</h2>
-	<input id="qtdRegistradores" type="number" value="4"></input><button onclick="criaTabela()"> Gerar </button>
+	<h2>Configurar a máquina:</h2>
+	<span>Quantidade Registradores: </span>
+	<input id="qtdRegistradores" type="number" min="1" max="16" value="4"
+		oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+	/>
+	</input>
+	
+	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nome da Máquina: </span>
+	<input id="nomeMaquina" type="text" value="Barney" />
+	<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	<button onclick="criaTabela()"> Gerar Registradores </button>
 
 	<br><br><br>
-	<!-- <a href="programa.html">OK TA PRONTO, IR PRO PROGRAMA</a> -->
 	<div id="tabela"></div>
 	<div id="botaoGerar"></div>
 	<br>
 	<div id="botaoValidar"></div>
-	<br>
+	
+	<div id="maquinaGerada"></div>
 	<div id="botaoEnviar"></div>
 
 	<script src="index.js"></script>

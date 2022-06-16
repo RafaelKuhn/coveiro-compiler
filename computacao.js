@@ -21,7 +21,7 @@ const templateMaquina = {
 }
 
 const programaCru = params.get("p").replace(/'/g, "")
-const programaObjeto = JSON.parse(programaCru);
+const programaObjeto = JSON.parse(programaCru); console.log(programaObjeto);
 
 const qtdLinhas = programaObjeto.lines;
 const expressions = programaObjeto.expressions;
@@ -101,7 +101,7 @@ function simulaComputacao(mapaDeRegistradores) {
 		qtdIteracoes++;
 	}
 
-	mostraQualquerCoisa("em 0, programa parou! ->\n", "✓");
+	mostraQualquerCoisa("em 0, programa parou! ->\n", " ✓");
 }
 
 /**
@@ -137,10 +137,14 @@ function checaCondicao(condicao, registradores) {
 		return registradores[keyRegistrador] == 0;
 	}
 	
-	else {
-		console.warn("!!!!!!!!!!!!!! CONDICAO NAO IMPLEMENTADA !!!!!!!!!!!!!")
-		return false;
+	if (condicao.includes("zero")) {
 	}
+
+	if (condicao.includes("zero")) {
+	}
+	
+	console.warn("!!!!!!!!!!!!!! CONDICAO NAO IMPLEMENTADA !!!!!!!!!!!!!")
+	return false;
 
 	// TODO: outras condiçoes, talvez retornar algo daqui (objeto) de log
 }

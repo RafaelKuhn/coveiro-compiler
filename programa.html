@@ -18,16 +18,31 @@
 			right: 0;
 			bottom: 0;
 			left: 50%;
+			margin-left: 10px;
 		}
 
     ul, p {
 			font-size: 12px;
 		}
 
+		p {
+			margin-top: 0;
+		}
+
+		h5 {
+			margin-top:    10px;
+			margin-bottom: 10px;
+		}
+
 		a {
 			color: blue;
 			text-decoration: underline;
 			cursor: pointer;
+		}
+
+		button {
+			margin-top:    10px;
+			margin-bottom: 10px;
 		}
 	</style>
 </head>
@@ -51,14 +66,13 @@ faca c_sub va_para 12
 
 # retorna, diminuindo A
 faca a_sub va_para 3
-</div>
+	</div>
 
 	<div id="direita-editor">
-		<button onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</button>
-		<br><br><br>
-		<button onclick="window.location.href = 'index.html'">VOLTA</button>
-    <br><br>
-    <h5>AÇÕES ARITMÉTICAS:</h5>
+		<button onclick="window.location.href = 'index.html'">Voltar</button>
+    <br>
+    
+		<h5>OPERAÇÕES ARITMÉTICAS:</h5>
     <p>Para registradores N e K:</p>
     <ul>
       <li>N_add: adiciona 1 no registrador N</li>
@@ -74,6 +88,8 @@ faca a_sub va_para 3
       <li>N_greater_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
       <li>N_lesser_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
     </ul>
+
+		<button onclick="mandaProgramaPraComputacao()">Ir Para Computação Com Este Programa</button>
 	</div>
 
 

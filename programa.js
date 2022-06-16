@@ -1,4 +1,3 @@
-console.log("opa vc ta na pagina do programa meu cupinscher")
 
 const newLineRegex = /\r?\n|\r/g;
 
@@ -35,7 +34,7 @@ function validaCodigo(linhas) {
   linhas.map((linha, index) => {
 
     if(linha.startsWith("se")) {
-      console.log("linha " + index + " tem um se")
+      // console.log("linha " + index + " tem um se")
       if(linha.match(ifNaoFechadoRegex) == null){
         const error = {
           row: index,
