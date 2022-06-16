@@ -20,6 +20,10 @@
 			left: 50%;
 		}
 
+    ul, p {
+			font-size: 12px;
+		}
+
 		a {
 			color: blue;
 			text-decoration: underline;
@@ -30,27 +34,46 @@
 
 <body>
 
-	<div id="editor"># a=2, b=3, c=0, d=0, ISSO MULTIPLICA A por B E GUARDA EM D
-se a_zero va_para 0 senao va_para 5
+	<div id="editor"># ESSE ALGORITMO MULTIPLICA A por B E GUARDA EM D
+# REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+se a_zero va_para 0 senao va_para 6
 
 # põe o valor de B em C e D
-se b_zero va_para 11 senao va_para 6
-faca c_add va_para 7
-faca d_add va_para 8
-faca b_sub va_para 5
+se b_zero va_para 12 senao va_para 7
+faca c_add va_para 8
+faca d_add va_para 9
+faca b_sub va_para 6
 
 # põe o valor de C em B, volta quando C for 0
-se c_zero va_para 16 senao va_para 12
-faca b_add va_para 13
-faca c_sub va_para 11
+se c_zero va_para 17 senao va_para 13
+faca b_add va_para 14
+faca c_sub va_para 12
 
 # retorna, diminuindo A
-faca a_sub va_para 2</div>
+faca a_sub va_para 3
+</div>
 
 	<div id="direita-editor">
-		<a onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</a>
-		<br><br><br><br><br>
-		<a href="index.html">VOLTA</a>
+		<button onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</button>
+		<br><br><br>
+		<button onclick="window.location.href = 'index.html'">VOLTA</button>
+    <br><br>
+    <h5>AÇÕES ARITMÉTICAS:</h5>
+    <p>Para registradores N e K:</p>
+    <ul>
+      <li>N_add: adiciona 1 no registrador N</li>
+      <li>N_sub: subtrai 1 no registrador N</li>
+      <li>N_mult_K: multiplica N por K e armazena o resultado em N</li>
+      <li>N_div_K: divide N por K e armazena o resultado em N (descarta o resto da divisão)</li>
+    </ul>
+
+    <h5>OPERAÇÕES DE TESTE:</h5>
+    <p>Para registradores N e K:</p>
+    <ul>
+      <li>N_zero: retorna TRUE quando N for ZERO, senão, retorna FALSE</li>
+      <li>N_greater_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
+      <li>N_lesser_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
+    </ul>
 	</div>
 
 
