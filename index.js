@@ -1,7 +1,6 @@
-console.log("temo na página do maquinario");
-
 let checkBoxes = [];
 let qtdRegistradores;
+
 const properties = [
 	'stores',
 	'returns',
@@ -13,12 +12,13 @@ const properties = [
 	'mults',
 	'divis'
 ];
+
 function criaTabela() {
 	qtdRegistradores = parseInt(document.getElementById('qtdRegistradores').value);
 	let table = document.getElementById('idTabela');
 	let botaoValidar = document.getElementById('idBotaoValidar');
 
-	if (table != null & botaoValidar != null) {
+	if (table != null && botaoValidar != null) {
 		table.remove();
 		botaoValidar.remove();
 	}
@@ -33,6 +33,8 @@ function criaTabela() {
 	table.appendChild(tableHead);
 	let tableIndex = ['Registrador', 'Armazena', 'Retorna', 'If Zero', 'Maior que', 'Menor que', 'Soma', 'Subtração', 'Multiplicação', 'Divisão'];
 	let linhaHead = document.createElement('tr');
+	
+	// cabeçalho
 	for (let col = 0; col < tableIndex.length; col++) {
 		let th = document.createElement('th');
 		th.textContent = tableIndex[col];
@@ -40,6 +42,7 @@ function criaTabela() {
 	}
 	tableHead.appendChild(linhaHead);
 
+	// corpo
 	let tableBody = document.createElement('tbody');
 	table.appendChild(tableBody);
 	for (let linha = 0; linha < qtdRegistradores; linha++) {
@@ -51,7 +54,6 @@ function criaTabela() {
 		checkBoxes[linha] = [];
 
 		for (let coluna = 1; coluna < tableIndex.length; coluna++) {
-
 			td = document.createElement('td');
 			let checkBox = document.createElement('input');
 			checkBox.type = 'checkbox';
@@ -67,14 +69,16 @@ function criaTabela() {
 	}
 
 	tblDiv.appendChild(table);
+
+	// botão
 	botaoValidar = document.createElement('button');
 	botaoValidar.id = 'idBotaoValidar'
 	botaoValidar.type = 'button';
-	botaoValidar.textContent = 'Validar';
+	botaoValidar.textContent = 'Gerar Notação';
 	botaoValidar.onclick = validarMaquina;
+	
 	document.getElementById('botaoValidar').appendChild(botaoValidar);
 }
-
 
 function validarMaquina() {
 	const machine = {};
@@ -110,7 +114,40 @@ function criaBotaoEnviar(uri) {
 	botaoEnviar = document.createElement('button');
 	botaoEnviar.id = 'idBotaoEnviar'
 	botaoEnviar.type = 'button';
-	botaoEnviar.textContent = 'Enviar';
-	botaoEnviar.onclick = 	() => {window.location.href = uri;};
+	botaoEnviar.textContent = 'Ir Para o Programa';
+	botaoEnviar.onclick = () => window.location.href = uri;
+
 	document.getElementById('botaoEnviar').appendChild(botaoEnviar);	
 }
+
+function criaTabelaDefault() {
+	
+	document.getElementById('qtdRegistradores').value = 4;
+	criaTabela();
+
+	const aRow = checkBoxes[0];
+	const bRow = checkBoxes[1];
+	const cRow = checkBoxes[2];
+	const dRow = checkBoxes[3];
+
+	// stores: a, b
+	aRow[0].checked = true;
+	bRow[0].checked = true;
+	// returns: d
+	dRow[1].checked = true;
+	// ifZero: a, b, c
+	aRow[2].checked = true;
+	bRow[2].checked = true;
+	cRow[2].checked = true;
+	// sums: b, c, d
+	bRow[5].checked = true;
+	cRow[5].checked = true;
+	dRow[5].checked = true;
+	// subs: a, b, c
+	aRow[6].checked = true;
+	bRow[6].checked = true;
+	cRow[6].checked = true;
+}
+
+
+criaTabelaDefault();
