@@ -7,20 +7,59 @@ function mandaProgramaPraComputacao() {
 
 	/** @type {String} */
 	const text = editor.getValue()
-	// const textWithEncodedLBs = text.replace(newLineRegex, "<EOL>") // troca \n por <EOL> caso precise
 
   const lines = text.split(newLineRegex);
-  const programJson = createJsonObjectFromLines(lines);
   
-  const programJsonString = JSON.stringify(programJson);
+  const erros = validaCodigo(lines);
+  editor.getSession().setAnnotations(erros);
 
-	// const lineCount = (textWithLBs.match() || []).length + 1
-	// alert(`text has ${lineCount} lines of code`)
-	// const mockProgram = {"lines": 16,"expressions": [	null,	{ "type": "if","condition": "a_zero","onTrue": 0,"onFalse": 5},null, null,{ "type": "if","condition": "b_zero","onTrue": 11,"onFalse": 6},{ "type": "call","what": "c_add","then": 7},{ "type": "call","what": "d_add","then": 8},{ "type": "call","what": "b_sub","then": 5},null, null,{ "type": "if","condition": "c_zero","onTrue": 16,"onFalse": 12},{"type": "call","what": "b_add","then": 13},{"type": "call","what": "c_sub","then": 11},null, null,{"type": "call","what": "a_sub","then": 2},]}
-	// const mockProgramJson = JSON.stringify(mockProgram);
+  if(erros.length > 0) {
+    alert("Erros encontrados, verifique seu programa.");
+    return;
+  }
+
+  const programJson = createJsonObjectFromLines(lines);
+  const programJsonString = JSON.stringify(programJson);
 
 	const uri = encodeURI(`computacao?p='${programJsonString}'`);
 	window.location.href = uri;
+}
+
+/** @param {String[]} linhas */
+function validaCodigo(linhas) {
+  let erros = []
+
+  const ifNaoFechadoRegex = "^se [a-zA-Z]_[a-zA-Z]+ va_para [0-9]+ senao va_para [0-9]+$"
+  const facaNaoFechadoRegex = "^faca [a-zA-Z]_[a-zA-Z]+ va_para [0-9]+$"
+
+  linhas.map((linha, index) => {
+
+    if(linha.startsWith("se")) {
+      console.log("linha " + index + " tem um se")
+      if(linha.match(ifNaoFechadoRegex) == null){
+        const error = {
+          row: index,
+          column: 0,
+          text: "Sintaxe ínvalida: 'se' precisa de uma condição, um 'va_para' e um 'senao va_para'",
+          type: "error"
+        }
+        erros.push(error);
+      }
+    }
+    else if (linha.startsWith("faca")){
+      if(linha.match(facaNaoFechadoRegex) == null){
+        const error = {
+          row: index,
+          column: 0,
+          text: "Sintaxe ínvalida: 'faca' precisa de uma operação e um 'va_para' que aponta para outra linha",
+          type: "error"
+        }
+        erros.push(error);
+      }
+    }
+  })
+
+  return erros;
 }
 
 function createJsonObjectFromLines(lines) {
@@ -59,3 +98,31 @@ function separateLineElements(line) {
 
   return expressionJson;
 }
+
+function checaSeOperacaoExiste(operacao) {
+
+}
+
+const mockMachine = {
+  "registers": 4,
+  "stores": [
+    "a", "b"
+  ],
+  "returns": [
+    "d"
+  ],
+  "ifZero": [
+    "a", "b", "c"
+  ],
+  "sums": [
+    "b", "c", "d"
+  ],
+  "subs": [
+    "a", "b", "c"
+  ],
+  "mults": [],
+  "divis": [],
+  "greater": [],
+  "lesser": [],
+  "returns": [],
+};
