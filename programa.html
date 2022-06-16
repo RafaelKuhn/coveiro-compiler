@@ -30,22 +30,24 @@
 
 <body>
 
-	<div id="editor"># a=2, b=3, c=0, d=0, ISSO MULTIPLICA A por B E GUARDA EM D
-se a_zero va_para 0 senao va_para 5
+	<div id="editor"># ESSE ALGORITMO MULTIPLICA A por B E GUARDA EM D
+# REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+se a_zero va_para 0 senao va_para 6
 
 # põe o valor de B em C e D
-se b_zero va_para 11 senao va_para 6
-faca c_add va_para 7
-faca d_add va_para 8
-faca b_sub va_para 5
+se b_zero va_para 12 senao va_para 7
+faca c_add va_para 8
+faca d_add va_para 9
+faca b_sub va_para 6
 
 # põe o valor de C em B, volta quando C for 0
-se c_zero va_para 16 senao va_para 12
-faca b_add va_para 13
-faca c_sub va_para 11
+se c_zero va_para 17 senao va_para 13
+faca b_add va_para 14
+faca c_sub va_para 12
 
 # retorna, diminuindo A
-faca a_sub va_para 2</div>
+faca a_sub va_para 3
+</div>
 
 	<div id="direita-editor">
 		<a onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</a>
