@@ -20,6 +20,10 @@
 			left: 50%;
 		}
 
+    ul, p {
+			font-size: 12px;
+		}
+
 		a {
 			color: blue;
 			text-decoration: underline;
@@ -51,8 +55,25 @@ faca a_sub va_para 3
 
 	<div id="direita-editor">
 		<button onclick="mandaProgramaPraComputacao()">PROGRAMEI, AGORA FAZ A COMPUTEICHON</button>
-		<br><br><br><br><br>
+		<br><br><br>
 		<button onclick="window.location.href = 'index.html'">VOLTA</button>
+    <br><br>
+    <h5>AÇÕES ARITMÉTICAS:</h5>
+    <p>Para registradores N e K:</p>
+    <ul>
+      <li>N_add: adiciona 1 no registrador N</li>
+      <li>N_sub: subtrai 1 no registrador N</li>
+      <li>N_mult_K: multiplica N por K e armazena o resultado em N</li>
+      <li>N_div_K: divide N por K e armazena o resultado em N (descarta o resto da divisão)</li>
+    </ul>
+
+    <h5>OPERAÇÕES DE TESTE:</h5>
+    <p>Para registradores N e K:</p>
+    <ul>
+      <li>N_zero: retorna TRUE quando N for ZERO, senão, retorna FALSE</li>
+      <li>N_greater_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
+      <li>N_lesser_K: retorna TRUE quando N for maior que K, senão, retorna FALSE</li>
+    </ul>
 	</div>
 
 
