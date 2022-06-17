@@ -20,16 +20,17 @@ const templateMaquina = {
 	],
 }
 
-const programaCru = params.get("p").replace(/'/g, "")
+const programaCru = params.get("p").replace(/'/g, "");
 const programaObjeto = JSON.parse(programaCru); console.log(programaObjeto);
 
-const qtdLinhas = programaObjeto.lines;
+// const qtdLinhas = programaObjeto.lines; // NAO USADO
 const expressions = programaObjeto.expressions;
 
 const arrayDeInputsNoHTML = criaEntradasDoUser();
 
 const preEsq = document.getElementById("preEsquerda");
 const preDir = document.getElementById("preDireita");
+
 
 // isso é chamado pelo botão
 function computaEMostra() {
@@ -56,18 +57,23 @@ function simulaComputacao(mapaDeRegistradores) {
 		stringEstadoRegistradores(linhaAtual, mapaDeRegistradores));
 
 	while (linhaAtual !== 0) {
-		const expressao = expressions[linhaAtual - 1];
-		if (!expressao) continue; // se a linha for um comentário, expressão é null
+		const expressao = expressions[linhaAtual - 1]; // linhas começam em 1, array começa em 0
+		if (!expressao) {
+			mostraLinhaDeSaidaNoDisplay(
+				`EM ${linhaAtual}, ENCONTROU ERRO!`,
+				"MANDOU PARA LINHA QUE NAO EXISTE");
+			return;
+		}
 
+		// resolve linhas com IF
 		if (expressao.type === "if") {
-			const ifDeuTrue = checaCondicao(expressao.condition, mapaDeRegistradores);
-			if (ifDeuTrue) {
+			const condicaoRetornouTrue = checaCondicao(expressao.condition, mapaDeRegistradores);
+			if (condicaoRetornouTrue) {
 				mostraLinhaDeSaidaNoDisplay(
 					`em ${linhaAtual}, como ${formataIgualZero(expressao.condition)}, desviou para ${expressao.onTrue}`,
 					stringEstadoRegistradores(expressao.onTrue, mapaDeRegistradores));
 
 				linhaAtual = expressao.onTrue;
-
 			}
 			else {
 				mostraLinhaDeSaidaNoDisplay(
@@ -78,6 +84,7 @@ function simulaComputacao(mapaDeRegistradores) {
 			}
 		}
 
+		// resolve linhas com FACA
 		else if (expressao.type === "call") {
 			const logOperacao = executaOperacaoERetornaLog(expressao.what, mapaDeRegistradores);
 			mostraLinhaDeSaidaNoDisplay(
@@ -88,10 +95,9 @@ function simulaComputacao(mapaDeRegistradores) {
 		}
 
 		if (qtdIteracoes >= maxIteracoes) {
-			const userWishesToStop = confirm(`O programa atingiu ${maxIteracoes} iterações, possível loop infinito, deseja parar?\n(se continuar, o máximo de iterações será dobrado)`)
-			if (userWishesToStop) {
-				mostraQualquerCoisa(`MÁXIMO DE ITERAÇÕES ALCANÇADO: ${maxIteracoes}`,
-					" POSSÍVEL LOOP INFINITO");
+			const userWishesToContinue = confirm(`O programa atingiu ${maxIteracoes} iterações, possível loop infinito, deseja continuar?\n(se continuar, o máximo de iterações será dobrado)`)
+			if (!userWishesToContinue) {
+				mostraQualquerCoisa(`\nITERAÇÕES ATÉ ENTÃO: ${maxIteracoes} POSSÍVEL LOOP`, "\n INFINITO, DEPURE SEU CÓDIGO!");
 				return;
 			}
 
@@ -119,11 +125,11 @@ function achaLinhaQueOAlgoritmoComeca() {
 }
 
 function formataIgualZero(cond) {
-	return `${cond.charAt(0)} == 0`;
+	return `${cond.charAt(0)}=0`;
 }
 
 function formataDiferenteZero(cond) {
-	return `${cond.charAt(0)} != 0`;
+	return `${cond.charAt(0)}≠0`;
 }
 
 /**
@@ -132,21 +138,24 @@ function formataDiferenteZero(cond) {
  * @returns {Boolean}
  */
 function checaCondicao(condicao, registradores) {
-	if (condicao.includes("zero")) {
-		const keyRegistrador = condicao.charAt(0);
-		return registradores[keyRegistrador] == 0;
-	}
+	const keyRegistrador = condicao.charAt(0);
 	
 	if (condicao.includes("zero")) {
+		return registradores[keyRegistrador] === 0;
+	}
+	
+	if (condicao.includes("maior")) {
+		const keyRegistradorK = condicao.charAt(condicao.length - 1);
+		return registradores[keyRegistrador] > registradores[keyRegistradorK];
 	}
 
-	if (condicao.includes("zero")) {
+	if (condicao.includes("menor")) {
+		const keyRegistradorK = condicao.charAt(condicao.length - 1);
+		return registradores[keyRegistrador] < registradores[keyRegistradorK];
 	}
 	
-	console.warn("!!!!!!!!!!!!!! CONDICAO NAO IMPLEMENTADA !!!!!!!!!!!!!")
+	console.warn(`!!! CONDICAO ${condicao} NAO IMPLEMENTADA !!!`)
 	return false;
-
-	// TODO: outras condiçoes, talvez retornar algo daqui (objeto) de log
 }
 
 /**
@@ -163,15 +172,32 @@ function executaOperacaoERetornaLog(operacao, registradores) {
 
 	else if (operacao.includes("sub")) {
 		registradores[keyRegistrador]--;
-		return `subtraiu registrador ${keyRegistrador}`;
+		return `subtraiu do registrador ${keyRegistrador}`;
+	}
+
+	else if (operacao.includes("mult")) {
+		const keyRegistradorK = operacao.charAt(operacao.length-1);
+		registradores[keyRegistrador] *= registradores[keyRegistradorK];
+		return `multiplicou o valor registrador ${keyRegistrador} por ${keyRegistradorK}`;
+	}
+
+	else if (operacao.includes("div")) {
+		const keyRegistradorK = operacao.charAt(operacao.length-1);
+		const valorRegK = registradores[keyRegistradorK];
+		if (valorRegK === 0) {
+			registradores[keyRegistrador] = 0;
+			return `DIVISÃO POR ZERO! RETORNANDO ZERO! ${keyRegistrador} por ${keyRegistradorK}`;
+		}
+		else {
+			const result = parseInt(registradores[keyRegistrador] / valorRegK); // descarta a parte decimal
+			registradores[keyRegistrador] = result;
+			return `dividiu o valor do registrador ${keyRegistrador} por ${keyRegistradorK}`;
+		}
 	}
 
 	else {
-		console.warn(" ERRROOOOO OPERAÇAO INVALIDA!! !! !  " + operacao);
-		return `DEU ERRO!!! OPERACAO NAO IMPLEMENTADA!!! ${operacao}`;
+		return `ERRO!!! "${operacao}" NAO IMPLEMENTADO!!!`;
 	}
-
-	// TODO: outras operaçoes
 }
 
 // #############################################################################################################################
@@ -181,7 +207,7 @@ function executaOperacaoERetornaLog(operacao, registradores) {
 /**
  * @returns {Map<String,Int>}
  */
- function pegaEntradaDoHTML() {
+function pegaEntradaDoHTML() {
 	const map = [];
 
 	let caractere = 'a'
@@ -218,15 +244,14 @@ function stringEstadoRegistradores(numeroDaLinha, mapaDeRegistradores) {
 		// console.log(`reg ${ch_registrador}: ${mapaDeRegistradores[ch_registrador]} `);
 		output += `${ch_registrador}: ${mapaDeRegistradores[ch_registrador]}, `;
 	}
-	output = output.slice(0, -2); // remove os dois últimos caracteres -> ", "
+	output = output.slice(0, -2); // remove os dois últimos caracteres: ", "
 	output += "))";
 
 	return output;
 }
 
 function mostraLinhaDeSaidaNoDisplay(outputEsq, outputDir) {
-	preEsq.textContent += `${outputEsq} ->\n`;
-	preDir.textContent += ` ${outputDir}\n`;
+	mostraQualquerCoisa(`${outputEsq} ->\n`, ` ${outputDir}\n`);
 }
 
 function mostraQualquerCoisa(textoEsquerda, textoDireita) {
@@ -248,7 +273,7 @@ function criaEntradasDoUser() {
 		const inputEl = document.createElement("input");
 		inputEl.max = 255;
 		inputEl.min = 0;
-		inputEl.value = Math.floor(Math.random() * (7 + 1));
+		inputEl.value = Math.floor(Math.random() * (7)) + 1; // número aleatório de 1 a 7
 		
 		entradas[caractereDoRegistrador] = inputEl;
 		

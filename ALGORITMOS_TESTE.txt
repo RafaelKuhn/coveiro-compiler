@@ -1,0 +1,50 @@
+# 1: ALGORITMO QUE RETORNA O MENOR VALOR ENTRE A E B
+# 2: REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+se a_menor_b va_para 6 senao va_para 11
+
+# 5: põe o valor de A em D
+se a_zero va_para 0 senao va_para 7
+faca d_add va_para 8
+faca a_sub va_para 6
+
+# 10: põe o valor de B em D
+se b_zero va_para 0 senao va_para 12
+faca d_add va_para 13
+faca b_sub va_para 11
+
+
+
+
+# 1: ALGORITMO QUE RETORNA O MAIOR VALOR ENTRE A E B
+# 2: REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+se a_maior_b va_para 6 senao va_para 11
+
+# 5: põe o valor de A em D
+se a_zero va_para 0 senao va_para 7
+faca d_add va_para 8
+faca a_sub va_para 6
+
+# 10: põe o valor de B em D
+se b_zero va_para 0 senao va_para 12
+faca d_add va_para 13
+faca b_sub va_para 11
+
+
+
+
+# 1: ALGORITMO QUE NUNCA PARA
+# 2: REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+faca a_add va_para 4
+faca a_sub va_para 3
+
+
+
+
+# 1: ALGORITMO QUE DIVIDE A por B E GUARDA EM D
+# 2: REQUER AS OPÇÕES DEFAULT DA MÁQUINA
+faca a_div_b va_para 6
+
+# 5: põe o valor de A em D
+se a_zero va_para 0 senao va_para 7
+faca d_add va_para 8
+faca a_sub va_para 6
