@@ -16,7 +16,7 @@ const properties = [
 function criaTabela() {
 	qtdRegistradores = parseInt(document.getElementById('qtdRegistradores').value);
 	if (qtdRegistradores < 1 || qtdRegistradores > 16 || !qtdRegistradores) {
-		alert("Número incorreto de registradores!");
+		alert("Número incorreto de registradores! permite-se de 1 à 16!");
 		return;
 	}
 
@@ -136,54 +136,104 @@ function geraNotacaoFormal(machine) {
 	const inversos = geraRegistradoresInversos(qtdReg);
 
 	// primeira linha
-	notacao += `${nomeMaquina} = N^${qtdReg}, N^${qtdRegEntrada}, N^${qtdRegSaida}\n\n\n`;
+	notacao += `${nomeMaquina} = N^${qtdReg}, N^${qtdRegEntrada}, N^${qtdRegSaida}\n\n`;
 
 	// linhas de entrada:
-	notacao += machine.stores.reduce((acc, current) => { // TODO: ∀neN ??  ∈ ? ????
-		acc += `armazena_${current}: N^${qtdReg} tal que, ∀neN, armazena_${current}(n) = ${padZeros(current, qtdReg)};\n`
+	notacao += machine.stores.reduce((acc, current) => {
+		const lbl = `${current}_armazena`;
+		acc += `${lbl}: N^${qtdReg} tal que, ∀n∈N, ${lbl}(n) = ${padZeros(current, qtdReg)};\n`
 		return acc;
 	}, "");
-	notacao += "\n";
+	notacao += machine.stores.length ? "\n" : "";
 
 	// linhas de saída:
 	notacao += machine.returns.reduce((acc, current) => {
-		acc += `retorna_${current}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, retorna_${current}${inversos} = ${inverseReg(current)};\n`
+		const lbl = `${current}_retorna`;
+		acc += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${registradorInversoA(current)};\n`
 		return acc;
 	}, "");
-	notacao += "\n";
+	notacao += machine.returns.length ? "\n" : "";
 
 	// linhas de add:
 	notacao += machine.adds.reduce((acc, current) => {
-		acc += `adiciona_${current}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, adiciona_${current}${inversos} = ${inverseRegsOperation(current, inversos, "+1")};\n`
+		const lbl = `${current}_add`;
+		acc += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${inverseRegsOperation(current, inversos, "+1")};\n`
 		return acc;
 	}, "");
-	notacao += "\n";
+	notacao += machine.adds.length ? "\n" : "";
 
 	// linhas de sub:
 	notacao += machine.subs.reduce((acc, current) => {
-		acc += `subtrai_${current}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, subtrai_${current}${inversos} = ${inverseRegsOperation(current, inversos, "-1")};\n`
+		const lbl = `${current}_sub`;
+		acc += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${inverseRegsOperation(current, inversos, "-1")};\n`
 		return acc;
 	}, "");
-	notacao += "\n";
+	notacao += machine.subs.length ? "\n" : "";
 
-	// TODO: MULT, DIV, VARRER ATE qtdReg, CRIANDO UM += PARA CADA ELEMENTO
-	notacao += "TODO: MULTS\n\n";
-	notacao += "TODO: DIVIS\n\n";
+	// linhas de mult:
+	notacao += machine.mults.reduce((acc, current) => {
+		const regsSemOAtual = arrayDeRegistradoresSemO(current, qtdReg);
+		acc += regsSemOAtual.reduce((accReg, currentK) => {
+			const lbl = `${current}_mult_${currentK}`;
+			accReg += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${inverseRegsOperation(current, inversos, `*${currentK}`)};\n`
+			return accReg;
+		}, "");		
+		return acc;
+	}, "");
+	notacao += machine.mults.length ? "\n" : "";
 
-	// linhas de ifZero:
+	// linhas de div:
+	notacao += machine.divis.reduce((acc, current) => {
+		const regsSemOAtual = arrayDeRegistradoresSemO(current, qtdReg);
+		acc += regsSemOAtual.reduce((accK, currentK) => {
+			const lbl = `${current}_div_${currentK}`;
+			accK += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${inverseRegsOperation(current, inversos, `/${currentK}`)};\n`
+			return accK;
+		}, "");		
+		return acc;
+	}, "");
+	notacao += machine.divis.length ? "\n" : "";
+
+	// linhas de zero:
 	notacao += machine.ifZero.reduce((acc, current) => {
 		const lbl = `${current}_zero`;
-		const inv = inverseReg(current);
+		const inv = registradorInversoA(current);
 		acc += `${lbl} -> {verdadeiro, falso} tal que, ∀${inversos}, ∈N^7, ${lbl}${inversos} = verdadeiro, se ${inv}=0; ${lbl}${inversos} = falso, se ${inv}≠0 (${current}=${inv})\n`
 		return acc;
 	}, "");
-	notacao += "\n";
+	notacao += machine.ifZero.length ? "\n" : "";
 
-	// TODO: GREATER, LESSER
-	notacao += "TODO: GREATER\n\n";
-	notacao += "TODO: LESSER\n\n";
+	// linhas de maior:
+	notacao += machine.greater.reduce((acc, current) => {
+		const regsSemOAtual = arrayDeRegistradoresSemO(current, qtdReg);
+		const inv = registradorInversoA(current);
+		acc += regsSemOAtual.reduce((accK, currentK) => {
+			const lbl = `${current}_maior_${currentK}`;
+			const invK = registradorInversoA(currentK);
+			accK += `${lbl} -> {verdadeiro, falso} tal que, ∀${inversos}, ∈N^7, ${lbl}${inversos} = verdadeiro, se ${inv}>0; ${lbl}${inversos} = falso, se ${inv}≤0 (${current}=${inv},${currentK}=${invK})\n`
+			return accK;
+		}, "");		
+		return acc;
+	}, "");
+	notacao += machine.greater.length ? "\n" : "";
 
-	// TODO: CHECAR SE machine.ifZero tem length != 0 antes de dar quebra de linha nessa property
+	// linhas de menor:
+	notacao += machine.lesser.reduce((acc, current) => {
+		const regsSemOAtual = arrayDeRegistradoresSemO(current, qtdReg);
+		const inv = registradorInversoA(current);
+		acc += regsSemOAtual.reduce((accK, currentK) => {
+			const lbl = `${current}_menor_${currentK}`;
+			const invK = registradorInversoA(currentK);
+			accK += `${lbl} -> {verdadeiro, falso} tal que, ∀${inversos}, ∈N^7, ${lbl}${inversos} = verdadeiro, se ${inv}<0; ${lbl}${inversos} = falso, se ${inv}≥0 (${current}=${inv},${currentK}=${invK})\n`
+			// accK += `${lbl}: N^${qtdReg} -> N tal que, ∀${inversos}∈N^${qtdReg}, ${lbl}${inversos} = ${inverseRegsOperation(current, inversos, `/${currentK}`)};\n`
+			return accK;
+		}, "");		
+		return acc;
+	}, "");
+	notacao += machine.lesser.length ? "\n" : "";
+
+
+
 
 	// properties = [
 	// 	'stores',
@@ -216,22 +266,39 @@ function padZeros(reg, length) {
 function geraRegistradoresInversos(qtd) {
 	let output = "("
 	for (let i = 0; i < qtd; i++) {
-		output += `${String.fromCharCode(122 - i)},`;
+		const codigoLatim = i + 97;
+		const caractereInverso = String.fromCharCode( codigoLatinParaGrego(codigoLatim) )
+		output += `${caractereInverso},`;
 	}
 	output = output.slice(0, -1) + ')';
 	return output;
 }
 
-// a, b, c -> z, y, x
-function inverseReg(register) {
-	return String.fromCharCode(122 - (register.charCodeAt(0) - 97));
+// a -> z; b -> y; c -> x;
+function registradorInversoA(register) {
+	return String.fromCharCode( codigoLatinParaGrego( register.charCodeAt(0) ) );
 }
 
-// com inverseRegs = "(z, y, x, w)"; current = "a"; append = "+1";
-// gera output "(a+1, y, x, w)"
+// mapeia "a,b,c,d" em "α,β,γ,δ"
+function codigoLatinParaGrego(latinCode) {
+	return 945 + latinCode - 97;
+	// return 122 - latinCode; // inverte a,b,c -> z,y,x
+}
+
+// com inverseRegs = "(z, y, x, w)"; current = "b"; append = "+1";
+// gera output "(z, b+1, x, w)"
 function inverseRegsOperation(current, inverseRegs, append) {
-	const regToReplace = inverseReg(current);
+	const regToReplace = registradorInversoA(current);
 	return inverseRegs.replace(regToReplace, `${current}${append}`);
+}
+
+// com current = b; qtd = 5; gera output [a, c, d, e]
+function arrayDeRegistradoresSemO(current, qtd) {
+	const arr = []
+	for (let i = 0; i < qtd; i++) {
+		arr.push(String.fromCharCode(97 + i));
+	}
+	return arr.filter(x => x !== current);
 }
 
 // 0, 1, 2 -> a, b, c
