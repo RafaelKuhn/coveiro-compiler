@@ -1,17 +1,20 @@
-
 const newLineRegex = /\r?\n|\r/g;
+const params = new URLSearchParams(decodeURI(window.location.search))
 
 // deixa passar só ~4000 caracteres por causa do tamanho do http header, mas acho que limita pro usuário msm e foda-se
 function mandaProgramaPraComputacao() {
+  
+  const rawMachine = params.get("m").replace(/'/g, "");
+  const machineObject = JSON.parse(rawMachine);
 
-	/** @type {String} */
+  /** @type {String} */
 	const text = editor.getValue()
-
+  
   const lines = text.split(newLineRegex);
   
-  const erros = validaCodigo(lines);
+  const erros = validaCodigo(lines, machineObject);
   editor.getSession().setAnnotations(erros);
-
+  
   if(erros.length > 0) {
     alert("Erros encontrados, verifique seu programa.");
     return;
@@ -19,20 +22,26 @@ function mandaProgramaPraComputacao() {
 
   const programJson = createJsonObjectFromLines(lines);
   const programJsonString = JSON.stringify(programJson);
-
+  
 	const uri = encodeURI(`computacao?p='${programJsonString}'`);
-	window.location.href = uri;
+	//window.location.href = uri;
 }
 
 /** @param {String[]} linhas */
-function validaCodigo(linhas) {
+function validaCodigo(linhas, maquina) {
   let erros = []
 
   const ifNaoFechadoRegex = "^se [a-zA-Z]_[a-zA-Z-_]+ va_para [0-9]+ senao va_para [0-9]+$"
   const facaNaoFechadoRegex = "^faca [a-zA-Z]_[a-zA-Z-_]+ va_para [0-9]+$"
 
   linhas.map((linha, index) => {
-
+    
+    linha = linha.trim().replace("  "," ");
+    const termosDaLinha = linha.split(" ")
+    const linhaVaPara = Number(termosDaLinha[3]) ?? -1;
+    const operacao = termosDaLinha[1];
+    
+    console.log('ta na linha ' + Number(index+1) + " com operacao " + operacao)
     if(linha.startsWith("se")) {
       // console.log("linha " + index + " tem um se")
       if(linha.match(ifNaoFechadoRegex) == null){
@@ -44,6 +53,20 @@ function validaCodigo(linhas) {
         }
         erros.push(error);
       }
+
+      const linhaSenao = Number(termosDaLinha[6]) ?? -1;
+
+      if (linhaVaPara != 0) {
+        const erro = checaSeLinhaEValida(linhaVaPara, linhas) 
+
+        if(erro != null) { erros.push(erro); }
+      }
+
+      if (linhaSenao != 0) {
+        const erro = checaSeLinhaEValida(linhaSenao, linhas) 
+
+        if(erro != null) { erros.push(erro); }
+      }
     }
     else if (linha.startsWith("faca")){
       if(linha.match(facaNaoFechadoRegex) == null){
@@ -51,6 +74,23 @@ function validaCodigo(linhas) {
           row: index,
           column: 0,
           text: "Sintaxe ínvalida: 'faca' precisa de uma operação e um 'va_para' que aponta para outra linha",
+          type: "error"
+        }
+        erros.push(error);
+      }
+
+      const erro = checaSeLinhaEValida(linhaVaPara, linhas) 
+
+      if(erro != null) { erros.push(erro) }
+    }
+
+    if(linha.startsWith("#") == false && linha != ""){
+      const operacaoExiste = checaSeOperacaoExiste(operacao, maquina);
+      if(operacaoExiste == false) {
+        const error = {
+          row: index,
+          column: 0,
+          text: "Operação '" + operacao + "'" +" inválida para esse registrador ou registrador inexistente",
           type: "error"
         }
         erros.push(error);
@@ -98,30 +138,90 @@ function separateLineElements(line) {
   return expressionJson;
 }
 
-function checaSeOperacaoExiste(operacao) {
 
+/** @param {String} operacao */
+function checaSeOperacaoExiste(operacao, maquina) {
+
+  const termosDaOperacao = operacao.split("_");
+  const registrador = termosDaOperacao[0]
+  const funcao = traduzOperacaoPraIndexDaMaquina(termosDaOperacao[1])
+  const segundoRegistrador = termosDaOperacao[2];
+
+  let registradorTemOperacao = false;
+
+  for (const machineOp in maquina) {
+    if(funcao === machineOp) {
+      for (const machineRegist of maquina[funcao]) {
+        if (registrador == machineRegist) {
+          registradorTemOperacao = true;
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  if(!segundoRegistrador) { return registradorTemOperacao; }
+
+  const segundoRegistradorExiste = checaSeSegundoRegistradorExiste(segundoRegistrador)
+  return segundoRegistradorExiste && registradorTemOperacao;
 }
 
-const mockMachine = {
-  "registers": 4,
-  "stores": [
-    "a", "b"
-  ],
-  "returns": [
-    "d"
-  ],
-  "ifZero": [
-    "a", "b", "c"
-  ],
-  "sums": [
-    "b", "c", "d"
-  ],
-  "subs": [
-    "a", "b", "c"
-  ],
-  "mults": [],
-  "divis": [],
-  "greater": [],
-  "lesser": [],
-  "returns": [],
-};
+function checaSeSegundoRegistradorExiste(registrador, maquina){
+  for (const machineOp in maquina) {
+    if( machineOp == "registers") { continue; }
+
+    for (const regist of maquina[machineOp]) {
+      if (registrador == regist) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function traduzOperacaoPraIndexDaMaquina(operacao) {
+  switch (operacao) {
+    case "add":
+      return "adds";
+  
+    case "sub":
+      return "subs";
+    
+    case "zero":
+      return "ifZero";
+    
+    case "maior":
+      return "greater";
+    
+    case "menor":
+      return "lesser";
+    
+    case "div":
+      return "divis"
+    
+    case "retorna":
+      return "returns"
+      
+    default:
+      break;
+  }
+}
+
+/**
+ * @param {Number} index 
+ * @param {String[]} linhas 
+ */
+function checaSeLinhaEValida(index, linhas){
+  if(index >= linhas.length+1 || index < 0 ||
+    linhas[index-1] == "" || linhas[index-1].startsWith("#")) {        
+      const error = {
+        row: index,
+        column: 0,
+        text: "Linha inidicada à operação 'va_para' é vazia ou inexistente",
+        type: "error"
+      }
+      return (error);
+  }
+}
