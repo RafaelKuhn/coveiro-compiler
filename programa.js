@@ -28,8 +28,8 @@ function mandaProgramaPraComputacao() {
 function validaCodigo(linhas) {
   let erros = []
 
-  const ifNaoFechadoRegex = "^se [a-zA-Z]_[a-zA-Z]+ va_para [0-9]+ senao va_para [0-9]+$"
-  const facaNaoFechadoRegex = "^faca [a-zA-Z]_[a-zA-Z]+ va_para [0-9]+$"
+  const ifNaoFechadoRegex = "^se [a-zA-Z]_[a-zA-Z-_]+ va_para [0-9]+ senao va_para [0-9]+$"
+  const facaNaoFechadoRegex = "^faca [a-zA-Z]_[a-zA-Z-_]+ va_para [0-9]+$"
 
   linhas.map((linha, index) => {
 
