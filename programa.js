@@ -39,9 +39,8 @@ function validaCodigo(linhas, maquina) {
     linha = linha.trim().replace("  "," ");
     const termosDaLinha = linha.split(" ")
     const linhaVaPara = Number(termosDaLinha[3]) ?? -1;
-    const operacao = termosDaLinha[1];
-    
-    console.log('ta na linha ' + Number(index+1) + " com operacao " + operacao)
+    const operacao = termosDaLinha[1] ?? "";
+  
     if(linha.startsWith("se")) {
       // console.log("linha " + index + " tem um se")
       if(linha.match(ifNaoFechadoRegex) == null){
@@ -84,7 +83,7 @@ function validaCodigo(linhas, maquina) {
       if(erro != null) { erros.push(erro) }
     }
 
-    if(linha.startsWith("#") == false && linha != ""){
+    if(linha.startsWith("#") == false && linha != "" && operacao != ""){
       const operacaoExiste = checaSeOperacaoExiste(operacao, maquina);
       if(operacaoExiste == false) {
         const error = {
@@ -162,15 +161,14 @@ function checaSeOperacaoExiste(operacao, maquina) {
   }
 
   if(!segundoRegistrador) { return registradorTemOperacao; }
-
-  const segundoRegistradorExiste = checaSeSegundoRegistradorExiste(segundoRegistrador)
+  const segundoRegistradorExiste = checaSeSegundoRegistradorExiste(segundoRegistrador, maquina)
+  console.log("sgundo registrador de " + operacao + " é " + segundoRegistrador + " e ele " + (segundoRegistradorExiste? "existe" : "não existe"))
   return segundoRegistradorExiste && registradorTemOperacao;
 }
 
 function checaSeSegundoRegistradorExiste(registrador, maquina){
   for (const machineOp in maquina) {
     if( machineOp == "registers") { continue; }
-
     for (const regist of maquina[machineOp]) {
       if (registrador == regist) {
         return true;
@@ -198,6 +196,9 @@ function traduzOperacaoPraIndexDaMaquina(operacao) {
     case "menor":
       return "lesser";
     
+    case "mult":
+      return "mults";
+
     case "div":
       return "divis"
     
@@ -214,7 +215,7 @@ function traduzOperacaoPraIndexDaMaquina(operacao) {
  * @param {String[]} linhas 
  */
 function checaSeLinhaEValida(index, linhas){
-  if(index >= linhas.length+1 || index < 0 ||
+  if(isNaN(index) || index >= linhas.length+1 || index < 0 ||
     linhas[index-1] == "" || linhas[index-1].startsWith("#")) {        
       const error = {
         row: index,
