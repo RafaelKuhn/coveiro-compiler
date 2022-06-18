@@ -24,7 +24,7 @@ function mandaProgramaPraComputacao() {
   const programJsonString = JSON.stringify(programJson);
   
 	const uri = encodeURI(`computacao?p='${programJsonString}'`);
-	//window.location.href = uri;
+	window.location.href = uri;
 }
 
 /** @param {String[]} linhas */
