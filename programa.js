@@ -42,7 +42,7 @@ function validaCodigo(linhas, maquina) {
     const operacao = termosDaLinha[1] ?? "";
   
     if(linha.startsWith("se")) {
-      // console.log("linha " + index + " tem um se")
+      
       if(linha.match(ifNaoFechadoRegex) == null){
         const error = {
           row: index,
@@ -100,6 +100,7 @@ function validaCodigo(linhas, maquina) {
   return erros;
 }
 
+// Cria json do programa a partir dos objetos das linhas
 function createJsonObjectFromLines(lines) {
   var programJson = {
     lines: lines.length,
@@ -114,6 +115,7 @@ function createJsonObjectFromLines(lines) {
   return programJson;
 }
 
+// Separa as "palavras" da linha em um objeto
 function separateLineElements(line) {
   const lineElements = line.split(" ");
 
@@ -137,7 +139,7 @@ function separateLineElements(line) {
   return expressionJson;
 }
 
-
+// Checa se o registrador existe e se tem essa função
 /** @param {String} operacao */
 function checaSeOperacaoExiste(operacao, maquina) {
 
@@ -166,6 +168,7 @@ function checaSeOperacaoExiste(operacao, maquina) {
   return segundoRegistradorExiste && registradorTemOperacao;
 }
 
+// Chega se o segundo registrador, no caso de operações de mult, div, maior e menor, existe
 function checaSeSegundoRegistradorExiste(registrador, maquina){
   for (const machineOp in maquina) {
     if( machineOp == "registers") { continue; }
@@ -179,6 +182,7 @@ function checaSeSegundoRegistradorExiste(registrador, maquina){
   return false;
 }
 
+// "Traduz" as funções para os index usados pela máquina
 function traduzOperacaoPraIndexDaMaquina(operacao) {
   switch (operacao) {
     case "add":
@@ -210,6 +214,8 @@ function traduzOperacaoPraIndexDaMaquina(operacao) {
   }
 }
 
+
+// Método que checa se a linha indicada no 'va_para' é vazia/comentada ou maior/menor que a quantidade de linhas
 /**
  * @param {Number} index 
  * @param {String[]} linhas 
