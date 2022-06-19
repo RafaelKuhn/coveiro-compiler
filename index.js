@@ -1,6 +1,7 @@
 let checkBoxes = [];
 let qtdRegistradores;
 
+// JSON referente a propriedades da máquina (registradores)
 const properties = [
 	'stores',
 	'returns',
@@ -13,6 +14,7 @@ const properties = [
 	'divis'
 ];
 
+// função que cria a tabela de registradores dinâmicamente
 function criaTabela() {
 	qtdRegistradores = parseInt(document.getElementById('qtdRegistradores').value);
 	if (qtdRegistradores < 1 || qtdRegistradores > 16 || !qtdRegistradores) {
@@ -39,7 +41,7 @@ function criaTabela() {
 	let tableIndex = ['Registrador', 'Armazena', 'Retorna', 'If Zero', 'Maior que', 'Menor que', 'Soma', 'Subtração', 'Multiplicação', 'Divisão'];
 	let linhaHead = document.createElement('tr');
 	
-	// cabeçalho
+	// cabeçalho da tabela
 	for (let col = 0; col < tableIndex.length; col++) {
 		let th = document.createElement('th');
 		th.textContent = tableIndex[col];
@@ -47,7 +49,7 @@ function criaTabela() {
 	}
 	tableHead.appendChild(linhaHead);
 
-	// corpo
+	// corpo da tabela
 	let tableBody = document.createElement('tbody');
 	table.appendChild(tableBody);
 	for (let linha = 0; linha < qtdRegistradores; linha++) {
@@ -75,7 +77,7 @@ function criaTabela() {
 
 	tblDiv.appendChild(table);
 
-	// botão
+	// botão para gerar a máquina
 	botaoValidar = document.createElement('button');
 	botaoValidar.id = 'idBotaoValidar'
 	botaoValidar.type = 'button';
@@ -85,6 +87,7 @@ function criaTabela() {
 	document.getElementById('botaoValidar').appendChild(botaoValidar);
 }
 
+// função responsável por validar a máquina
 function validarMaquina() {
 	const machine = {};
 	machine.registers = qtdRegistradores;
@@ -110,6 +113,7 @@ function validarMaquina() {
 	criaOuAtualizaNotacaoFormal(machine);
 }
 
+// função para atualizar e exibir a notação formal da máquina já gerada
 function criaOuAtualizaNotacaoFormal(machineObj) {
 	const preGerada = document.getElementById("notacaoFormal");
 	if (preGerada) {
@@ -125,6 +129,7 @@ function criaOuAtualizaNotacaoFormal(machineObj) {
 	document.getElementById("maquinaGerada").appendChild(pre);
 }
 
+// função para gerar a notação formal da máquina de acordo com os registradores
 function geraNotacaoFormal(machine) {
 	let notacao = "";
 	
