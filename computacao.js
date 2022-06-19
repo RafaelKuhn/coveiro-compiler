@@ -1,10 +1,10 @@
 const params = new URLSearchParams(decodeURI(window.location.search))
 
-const rawMachine = params.get("m").replace(/'/g, "")
-const maquinaObjeto = JSON.parse(rawMachine);
+const rawMachine = params.get("m");
+const maquinaObjeto = JSON.parse(rawMachine.replace(/'/g, ""));
 
-const programaCru = params.get("p").replace(/'/g, "");
-const programaObjeto = JSON.parse(programaCru); console.log(programaObjeto);
+const programaCru = params.get("p");
+const programaObjeto = JSON.parse(programaCru.replace(/'/g, ""));
 
 // const qtdLinhas = programaObjeto.lines; // NAO USADO
 const expressions = programaObjeto.expressions;
@@ -265,4 +265,9 @@ function criaEntradasDoUser() {
 	})
 
 	return entradas;
+}
+
+function volta() {
+	const uri = encodeURI(`programa?m=${rawMachine}`);
+	window.location.href = uri;
 }

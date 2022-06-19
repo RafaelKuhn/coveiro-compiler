@@ -15,7 +15,7 @@ function mandaProgramaPraComputacao() {
   const erros = validaCodigo(lines, machineObject);
   editor.getSession().setAnnotations(erros);
   
-  if(erros.length > 0) {
+  if (erros.length > 0) {
     alert("Erros encontrados, verifique seu programa.");
     return;
   }
@@ -38,12 +38,12 @@ function validaCodigo(linhas, maquina) {
     
     linha = linha.trim().replace("  "," ");
     const termosDaLinha = linha.split(" ")
-    const linhaVaPara = Number(termosDaLinha[3]) ?? -1;
+    const linhaVaPara = parseInt(termosDaLinha[3]) ?? -1;
     const operacao = termosDaLinha[1] ?? "";
   
-    if(linha.startsWith("se")) {
+    if (linha.startsWith("se")) {
       
-      if(linha.match(ifNaoFechadoRegex) == null){
+      if (linha.match(ifNaoFechadoRegex) == null){
         const error = {
           row: index,
           column: 0,
@@ -53,22 +53,22 @@ function validaCodigo(linhas, maquina) {
         erros.push(error);
       }
 
-      const linhaSenao = Number(termosDaLinha[6]) ?? -1;
+      const linhaSenao = parseInt(termosDaLinha[6]) ?? -1;
 
       if (linhaVaPara != 0) {
         const erro = checaSeLinhaEValida(linhaVaPara, linhas) 
 
-        if(erro != null) { erros.push(erro); }
+        if (erro != null) { erros.push(erro); }
       }
 
       if (linhaSenao != 0) {
         const erro = checaSeLinhaEValida(linhaSenao, linhas) 
 
-        if(erro != null) { erros.push(erro); }
+        if (erro != null) { erros.push(erro); }
       }
     }
     else if (linha.startsWith("faca")){
-      if(linha.match(facaNaoFechadoRegex) == null){
+      if (linha.match(facaNaoFechadoRegex) == null){
         const error = {
           row: index,
           column: 0,
@@ -80,12 +80,12 @@ function validaCodigo(linhas, maquina) {
 
       const erro = checaSeLinhaEValida(linhaVaPara, linhas) 
 
-      if(erro != null) { erros.push(erro) }
+      if (erro != null) { erros.push(erro) }
     }
 
-    if(linha.startsWith("#") == false && linha != "" && operacao != ""){
+    if (linha.startsWith("#") == false && linha != "" && operacao != ""){
       const operacaoExiste = checaSeOperacaoExiste(operacao, maquina);
-      if(operacaoExiste == false) {
+      if (operacaoExiste == false) {
         const error = {
           row: index,
           column: 0,
@@ -102,7 +102,7 @@ function validaCodigo(linhas, maquina) {
 
 // Cria json do programa a partir dos objetos das linhas
 function createJsonObjectFromLines(lines) {
-  var programJson = {
+  let programJson = {
     lines: lines.length,
     expressions: []
   };
@@ -119,22 +119,22 @@ function createJsonObjectFromLines(lines) {
 function separateLineElements(line) {
   const lineElements = line.split(" ");
 
-  if(lineElements[0] === "" || lineElements[0].charAt(0) === "#") { return null; }
+  if (lineElements[0] === "" || lineElements[0].charAt(0) === "#") { return null; }
 
   const expressionJson = {}
 
-  if(lineElements[0] === "se"){
+  if (lineElements[0] === "se"){
     expressionJson.type = "if";
     expressionJson.condition = lineElements[1];
-    expressionJson.onTrue = Number(lineElements[3]);
-    expressionJson.onFalse = Number(lineElements[6]);
+    expressionJson.onTrue = parseInt(lineElements[3]);
+    expressionJson.onFalse = parseInt(lineElements[6]);
 
     return expressionJson;
   }
 
   expressionJson.type = "call";
   expressionJson.what = lineElements[1];
-  expressionJson.then = Number(lineElements[3]);
+  expressionJson.then = parseInt(lineElements[3]);
 
   return expressionJson;
 }
@@ -151,7 +151,7 @@ function checaSeOperacaoExiste(operacao, maquina) {
   let registradorTemOperacao = false;
 
   for (const machineOp in maquina) {
-    if(funcao === machineOp) {
+    if (funcao === machineOp) {
       for (const machineRegist of maquina[funcao]) {
         if (registrador == machineRegist) {
           registradorTemOperacao = true;
@@ -162,7 +162,7 @@ function checaSeOperacaoExiste(operacao, maquina) {
     }
   }
 
-  if(!segundoRegistrador) { return registradorTemOperacao; }
+  if (!segundoRegistrador) { return registradorTemOperacao; }
   const segundoRegistradorExiste = checaSeSegundoRegistradorExiste(segundoRegistrador, maquina)
   console.log("sgundo registrador de " + operacao + " é " + segundoRegistrador + " e ele " + (segundoRegistradorExiste? "existe" : "não existe"))
   return segundoRegistradorExiste && registradorTemOperacao;
@@ -171,7 +171,7 @@ function checaSeOperacaoExiste(operacao, maquina) {
 // Chega se o segundo registrador, no caso de operações de mult, div, maior e menor, existe
 function checaSeSegundoRegistradorExiste(registrador, maquina){
   for (const machineOp in maquina) {
-    if( machineOp == "registers") { continue; }
+    if ( machineOp == "registers") { continue; }
     for (const regist of maquina[machineOp]) {
       if (registrador == regist) {
         return true;
@@ -221,7 +221,7 @@ function traduzOperacaoPraIndexDaMaquina(operacao) {
  * @param {String[]} linhas 
  */
 function checaSeLinhaEValida(index, linhas){
-  if(isNaN(index) || index >= linhas.length+1 || index < 0 ||
+  if (isNaN(index) || index >= linhas.length+1 || index < 0 ||
     linhas[index-1] == "" || linhas[index-1].startsWith("#")) {        
       const error = {
         row: index,
