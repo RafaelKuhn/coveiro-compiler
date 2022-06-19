@@ -23,7 +23,7 @@ function mandaProgramaPraComputacao() {
   const programJson = createJsonObjectFromLines(lines);
   const programJsonString = JSON.stringify(programJson);
   
-	const uri = encodeURI(`computacao?p='${programJsonString}'`);
+	const uri = encodeURI(`computacao?p='${programJsonString}'&m='${rawMachine}'`);
 	window.location.href = uri;
 }
 

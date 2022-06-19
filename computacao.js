@@ -1,24 +1,7 @@
 const params = new URLSearchParams(decodeURI(window.location.search))
 
-// const rawMachine = params.get("m").replace(/'/g, "")
-const templateMaquina = {
-	"registers": 4,
-	"stores": [
-		"a", "b"
-	],
-	"returns": [
-		"d"
-	],
-	"ifZero": [
-		"a", "b", "c"
-	],
-	"sums": [
-		"b", "c", "d"
-	],
-	"subs": [
-		"a", "b", "c"
-	],
-}
+const rawMachine = params.get("m").replace(/'/g, "")
+const maquinaObjeto = JSON.parse(rawMachine);
 
 const programaCru = params.get("p").replace(/'/g, "");
 const programaObjeto = JSON.parse(programaCru); console.log(programaObjeto);
@@ -211,7 +194,7 @@ function pegaEntradaDoHTML() {
 	const map = [];
 
 	let caractere = 'a'
-	for(let i = 0; i < templateMaquina.registers; i++) {
+	for(let i = 0; i < maquinaObjeto.registers; i++) {
 		map[caractere] = 0;
 		caractere = incrementaCaractere(caractere);
 	}
@@ -264,7 +247,7 @@ function mostraQualquerCoisa(textoEsquerda, textoDireita) {
 function criaEntradasDoUser() {
 	const entradas = []
 	const inputersDiv = document.getElementById("inputers");
-	const registradoreDeEntrada = templateMaquina.stores;
+	const registradoreDeEntrada = maquinaObjeto.stores;
 	
 	registradoreDeEntrada.forEach(caractereDoRegistrador => {
 		const previewEl = document.createElement("span");
