@@ -8,4 +8,4 @@ se não tiver o serve instala ele com o npm
 $ npm install -g serve
 ```
 daí acessa o [localhost:3000](http://localhost:3000)  
-isso dai vai abrir a primeira página (index.html) onde o brunim vai meter a máquina
+isso dai vai abrir a primeira página (index.html)
